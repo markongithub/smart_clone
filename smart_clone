@@ -1,0 +1,23 @@
+GIT_URL=$1
+GIT_ROOT=${2:-$HOME/git}
+
+# Possible formats:
+# https://github.com/jhuangtw-dev/xg2xg.git
+# git@github.com:markongithub/smart_clone.git
+
+if [[ $GIT_URL = git@* ]]; then
+  MIDDLE_DIRS=$(echo $GIT_URL | sed 's/.*@//; s/\/[^\/]*.git$//; s/:/\//')
+elif [[ $GIT_URL = https* ]]; then
+  MIDDLE_DIRS=$(echo $GIT_URL | sed 's/^https:..//; s/\/[^\/]*.git$//')
+else
+  echo invalid URL format
+  exit 1
+fi
+
+LAST_DIR=$(echo $GIT_URL | sed 's/.*\///; s/.git$//')
+FULL_PARENT=$GIT_ROOT/$MIDDLE_DIRS
+mkdir -p $FULL_PARENT
+cd $FULL_PARENT
+git clone $GIT_URL
+cd $LAST_DIR
+pwd
